@@ -45,6 +45,7 @@ public class HomeController {
                 show_posts.add(map);
             }
         }
+
         model.addAttribute("discussPosts",show_posts);
         return "index";
     }
