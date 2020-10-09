@@ -66,7 +66,7 @@ public class LoginController implements CommunityConstant {
     }
 
     @RequestMapping(path = "/login",method = RequestMethod.POST)
-    public String login(String username, String password, String code, Boolean rememberMe,
+    public String login(String username, String password, String code, Boolean rememberme,
                         Model model, HttpSession session, HttpServletResponse response){
         // 最先判断验证码
         String kaptcha = (String) session.getAttribute("kaptcha");
@@ -75,8 +75,12 @@ public class LoginController implements CommunityConstant {
             return "site/login";
         }
 
+        // 前端一直拿不到rememberme为false,便加入这行代码自动false,但能拿到true
+        if (rememberme == null){
+            rememberme = false;
+        }
         // 检查账号密码
-        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
         Map<String, Object> map = userService.login(username, password, expiredSeconds);
         if (map.containsKey("ticket")){
             Cookie cookie =  new Cookie("ticket", map.get("ticket").toString());
