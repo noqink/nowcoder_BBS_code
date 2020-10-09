@@ -6,6 +6,7 @@ import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
+import com.nowcoder.community.util.HostHolder;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ import java.util.Random;
 
 @Service
 public class UserService implements CommunityConstant {
+
+    @Autowired
+    HostHolder hostHolder;
 
     @Autowired
     private UserMapper userMapper;
@@ -168,5 +172,43 @@ public class UserService implements CommunityConstant {
 
     public int updateHeadUrl(int userId, String headerUrl){
         return userMapper.updateHeader(userId, headerUrl);
+    }
+
+    public Map<String, Object> updatePassword(String oldPassword, String newPassword, String newPasswordConfim){
+        Map<String, Object> map = new HashMap<>();
+
+        if(StringUtils.isBlank(oldPassword)){
+            map.put("oldPasswordMsg","旧密码不能为空！");
+            return map;
+        }
+        if(StringUtils.isBlank(newPassword)){
+            map.put("newPasswordMsg","新密码不能为空！");
+            return map;
+        }
+        if(StringUtils.isBlank(newPasswordConfim)){
+            map.put("newPasswordConfimMsg","确认密码不能为空！");
+            return map;
+        }
+
+        if(oldPassword.equals(newPassword)){
+            map.put("newPasswordMsg","新密码不能和原密码相同！");
+            return map;
+        }
+
+        if(!newPassword.equals(newPasswordConfim)){
+            map.put("newPasswordConfimMsg","确认密码与新密码不同！");
+            return map;
+        }
+
+        User user = hostHolder.getUsers();
+        oldPassword=CommunityUtil.md5(oldPassword+user.getSalt());
+        if(!oldPassword.equals(user.getPassword())){
+            map.put("oldPasswordMsg","密码错误！");
+            return map;
+        }
+
+
+        userMapper.updatePassword(user.getId(),CommunityUtil.md5(newPassword+user.getSalt()));
+        return map;
     }
 }
