@@ -4,6 +4,7 @@
 #### 登录登出功能实现 [登录凭证暂存于mysql的login_ticket表中 后续将引入redis]
 #### 添加拦截器 利用ThreadLocal存取user实现页面登陆信息显示 代替session对象实现线程隔离
 #### 头像上传功能 后期重构 文件转存服务器
+#### 登录状态下修改密码 
 
 #### 10.7.2020 补全注册 kaptcha生成验证码 (thymeleaf真坑)
 
