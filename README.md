@@ -1,5 +1,9 @@
 
 
+#### 10.10.2020 
+#### Trie前缀树实现敏感词过滤 发布帖子实现
+#### Spring security后续添加 新增@LoginRequired注解实现拦截
+
 #### 10.9.2020 
 #### 登录登出功能实现 [登录凭证暂存于mysql的login_ticket表中 后续将引入redis]
 #### 添加拦截器 利用ThreadLocal存取user实现页面登陆信息显示 代替session对象实现线程隔离
