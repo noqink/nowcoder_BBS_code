@@ -18,4 +18,6 @@ public interface DiscussPostMapper {
     // 动态sql在<if>中使用,单一参数,一定要取别名,否则报错
     int selectDiscussPostRows(@Param("userId") int userId);
 
+    int insertDiscussPost(DiscussPost discussPost);
+
 }
