@@ -25,16 +25,16 @@ import java.util.*;
 public class DiscussPostController implements CommunityConstant {
 
     @Autowired
-    DiscussPostService discussPostService;
+    private DiscussPostService discussPostService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    HostHolder hostHolder;
+    private HostHolder hostHolder;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody

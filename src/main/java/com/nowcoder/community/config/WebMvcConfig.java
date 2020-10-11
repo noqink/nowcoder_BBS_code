@@ -11,10 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
-    LoginTicketInterceptor loginTicketInterceptor;
+    private LoginTicketInterceptor loginTicketInterceptor;
 
     @Autowired
-    LoginRequiredInterceptor loginRequiredInterceptor;
+    private LoginRequiredInterceptor loginRequiredInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
