@@ -2,7 +2,10 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.FollowService;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +30,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -42,6 +45,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     @Autowired
     private HostHolder hostHolder;
@@ -133,4 +142,31 @@ public class UserController {
 
     }
 
+    // 个人主页
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model){
+
+        User user = userService.findUserById(userId);
+        if (user == null){
+            throw new RuntimeException("该用户不存在");
+        }
+
+        model.addAttribute("user", user);
+        // 获赞数量
+        int userLikeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("userLikeCount", userLikeCount);
+
+        // 关注
+        model.addAttribute("userFolloweeCount", followService.findFolloweeCount(userId, ENTITY_TYPE_USER));
+        model.addAttribute("userFollowerCount", followService.findFollowerCount(ENTITY_TYPE_USER, userId));
+
+        boolean hasFollow = false;
+        // 判断登陆情况
+        if (hostHolder.getUsers() != null){
+            hasFollow = followService.hasFollow(hostHolder.getUsers().getId(), ENTITY_TYPE_USER,userId);
+        }
+        model.addAttribute("userFollowerStatus", hasFollow);
+
+        return "site/profile";
+    }
 }
