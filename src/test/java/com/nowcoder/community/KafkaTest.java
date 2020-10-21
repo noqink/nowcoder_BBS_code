@@ -21,10 +21,11 @@ public class KafkaTest {
     @Test
     public void testKafka() {
         kafkaProducer.sendMessage("test", "你好");
+        System.out.println(1);
         kafkaProducer.sendMessage("test", "在吗");
 
         try {
-            Thread.sleep(1000 * 10);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
