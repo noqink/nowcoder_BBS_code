@@ -24,6 +24,16 @@ spring:
     database: 1
     host: localhost
     port: 6379
+  # KafkaProperties
+#  kafka:
+#    consumer:
+#      group-id: test-consumer-group
+#      # 偏移量
+#      enable-auto-commit: true
+#      # 自动提交间隔
+#      auto-commit-interval: 3000
+#    bootstrap-servers: localhost:9092
+
 
 
   #MailProperties
@@ -43,3 +53,5 @@ community:
   path:
     domain: http://localhost:8080
     upload: /Users/qiuke/Desktop/nowcoder_source/work/picture
+
+
