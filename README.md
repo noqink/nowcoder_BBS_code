@@ -5,6 +5,7 @@
 #### 优化登陆模块: 
      用redis存储验证码(之前session)
      用redis存储登录凭证
+     (之前service层利用mysql存储ticket凭证 业务逻辑仍是service存储ticket controller给cookie存取ticket 拦截器对请求判断ticket状态)
      用redis存储用户信息
 
 #### 10.16.2020 
