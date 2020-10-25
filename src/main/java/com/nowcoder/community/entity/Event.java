@@ -7,8 +7,10 @@ public class Event {
 
     private String topic;
     private int userId;
+    // type为1 id为帖子id type为2 id为评论表当前回复的id
     private int entityType;
     private int entityId;
+    // 发布帖子/发表评论的人
     private int entityUserId;
     // 拓展其他业务
     private Map<String, Object> data = new HashMap<>();
