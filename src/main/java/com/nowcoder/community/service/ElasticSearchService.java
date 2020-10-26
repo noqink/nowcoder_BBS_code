@@ -1,6 +1,5 @@
-package com.nowcoder.community;
+package com.nowcoder.community.service;
 
-import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.dao.elasticsearch.DiscussPostRepository;
 import com.nowcoder.community.entity.DiscussPost;
 import org.elasticsearch.action.search.SearchResponse;
@@ -11,10 +10,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,20 +20,14 @@ import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.aggregation.impl.AggregatedPageImpl;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ContextConfiguration(classes = CommunityApplication.class)
-public class ElasticSearchTest {
-
-    @Autowired
-    private DiscussPostMapper discussPostMapper;
+@Service
+public class ElasticSearchService {
 
     @Autowired
     private DiscussPostRepository discussPostRepository;
@@ -45,79 +35,27 @@ public class ElasticSearchTest {
     @Autowired
     private ElasticsearchTemplate elasticTemplate;
 
-    @Test
-    public void EsTest(){
-        discussPostRepository.save(discussPostMapper.selectDiscussPostById(281));
-        discussPostRepository.save(discussPostMapper.selectDiscussPostById(280));
-        discussPostRepository.save(discussPostMapper.selectDiscussPostById(277));
-    }
-
-    @Test
-    public void EsTestInsertList() {
-        discussPostRepository.saveAll(discussPostMapper.selectDiscussPosts(101, 0, 100));
-        discussPostRepository.saveAll(discussPostMapper.selectDiscussPosts(102, 0, 100));
-        discussPostRepository.saveAll(discussPostMapper.selectDiscussPosts(103, 0, 100));
-        discussPostRepository.saveAll(discussPostMapper.selectDiscussPosts(111, 0, 100));
-        discussPostRepository.saveAll(discussPostMapper.selectDiscussPosts(112, 0, 100));
-    }
-
-    @Test
-    public void EsTestUpdate() {
-        DiscussPost discussPost = discussPostMapper.selectDiscussPostById(231);
-        //discussPostRepository.save(discussPostMapper.selectDiscussPostById(231));
-        discussPost.setContent("woshihaoren");
+    public void saveDiscussPost(DiscussPost discussPost){
         discussPostRepository.save(discussPost);
     }
 
-    @Test
-    public void EsTestDelete() {
-        discussPostRepository.deleteById(231);
-    }
-    @Test
-    public void EsTestDeleteALL() {
-        discussPostRepository.deleteAll();
+    public void deleteDiscussPost(int id){
+        discussPostRepository.deleteById(id);
     }
 
-    @Test
-    public void EsTestSearch() {
+    public Page<DiscussPost> searchDiscussPost(String keywords, int current, int limit){
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
+                .withQuery(QueryBuilders.multiMatchQuery(keywords, "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(0, 10))
-                .withHighlightFields(
-                        new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
-                        new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
-                        ).build();
-        // Repository.search()底层调用elasticsearchTemplate.queryForPage(searchQuery, class, searchResultMapper)
-        // 底层获取到了高亮显示的值 但是没有返回
-
-        Page<DiscussPost> posts = discussPostRepository.search(searchQuery);
-        System.out.println(posts.getTotalElements());
-        System.out.println(posts.getTotalPages());
-        System.out.println(posts.getNumber());
-        System.out.println(posts.getSize());
-        for (DiscussPost discussPost:posts){
-            System.out.println(discussPost);
-        }
-
-    }
-
-    @Test
-    public void testSearchByTemplate() {
-        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
-                .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(0, 10))
+                .withPageable(PageRequest.of(current, limit))
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
                 ).build();
 
-        Page<DiscussPost> page = elasticTemplate.queryForPage(searchQuery, DiscussPost.class, new SearchResultMapper() {
+        return elasticTemplate.queryForPage(searchQuery, DiscussPost.class, new SearchResultMapper() {
             @Override
             public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> aClass, Pageable pageable) {
                 SearchHits hits = response.getHits();
@@ -173,15 +111,5 @@ public class ElasticSearchTest {
                 return null;
             }
         });
-
-        System.out.println(page.getTotalElements());
-        System.out.println(page.getTotalPages());
-        System.out.println(page.getNumber());
-        System.out.println(page.getSize());
-        for (DiscussPost post : page) {
-            System.out.println(post);
-        }
     }
-
-
 }
