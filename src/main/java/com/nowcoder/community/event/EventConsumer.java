@@ -70,7 +70,7 @@ public class EventConsumer implements CommunityConstant {
     }
 
 
-    @KafkaListener(topics = {TOPIC_PUBLISH})
+    @KafkaListener(topics = TOPIC_PUBLISH)
     public void handleEventPublish(ConsumerRecord record){
         if (record == null || record.value() == null){
             // 空消息
@@ -85,6 +85,23 @@ public class EventConsumer implements CommunityConstant {
 
         DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId());
         elasticSearchService.saveDiscussPost(post);
+
+    }
+
+    @KafkaListener(topics = TOPIC_DELETE)
+    public void handleEventDelete(ConsumerRecord record){
+        if (record == null || record.value() == null){
+            // 空消息
+            logger.error("消息内容为空！");
+            return;
+        }
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null){
+            logger.error("消息格式为空！");
+            return;
+        }
+
+        elasticSearchService.deleteDiscussPost(event.getEntityId());
 
     }
 }

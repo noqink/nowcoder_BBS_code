@@ -31,12 +31,26 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implement
                 .antMatchers(
                       "/user/setting","/user/upload","/user/updatePassword",
                         "/discuss/add", "/comment/add/**", "/message/**",
-                        "like", "follow", "unfollow"
+                        "/like", "/follow", "/unfollow"
                 )
                 .hasAnyAuthority(
                         AUTHORITY_USER, AUTHORITY_MODERATOR, AUTHORITY_ADMIN
                 )
-                .anyRequest().permitAll();
+                .antMatchers(
+                        "/discuss/top",
+                        "/discuss/wonderful"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_MODERATOR
+                )
+                .antMatchers(
+                        "/discuss/delete"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_ADMIN
+                )
+                .anyRequest().permitAll()
+                .and().csrf().disable();
 
         // 权限冲突处理 普通请求(返回html)和异步请求(返回json)
         http.exceptionHandling()
