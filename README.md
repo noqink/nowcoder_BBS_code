@@ -1,5 +1,6 @@
 #### 10.22.2020
 #### ES搜索 高亮显示 (jquery版本更换 差点以为消息队列阻塞)
+#### 删除LoginTicketRequired注解 加入Spring security进行权限管理
 
 #### 10.22.2020
 #### kafka实现评论、关注、点赞通知
