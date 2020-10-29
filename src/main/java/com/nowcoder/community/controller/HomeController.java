@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,13 +32,13 @@ public class HomeController implements CommunityConstant {
     private LikeService likeService;
 
     @RequestMapping(path = {"/index","/"},method = RequestMethod.GET)
-    public String getIndexPage(Model model, Page page){
+    public String getIndexPage(Model model, Page page, @RequestParam(name = "orderMode", defaultValue = "0") int orderMode){
         // 方法调用前,SpringMVC自动实例化Model,Page,并将Page注入给Model
         // 所以,在Thymeleaf可以直接访问Page对象中的数据
-        page.setPath("/index");
+        page.setPath("/index?orderMode="+orderMode);
         page.setRows(discussPostService.selectDiscussPostRows(0));
 
-        List<DiscussPost> posts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());
+        List<DiscussPost> posts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit(), orderMode);
         List<Map<String,Object>> show_posts = new ArrayList<>();
         if (posts != null){
             // 利用posts中的user_id获取实际的user,方便提取例如username的数据
@@ -54,7 +55,7 @@ public class HomeController implements CommunityConstant {
                 show_posts.add(map);
             }
         }
-
+        model.addAttribute("orderMode",orderMode);
         model.addAttribute("discussPosts",show_posts);
         return "index";
     }

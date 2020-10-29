@@ -13,7 +13,7 @@ public interface DiscussPostMapper {
 
     // userId为"我发布的帖子"功能调用
     // offset,limit为分页功能调用
-    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);
+    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode);
 
     // 动态sql在<if>中使用,单一参数,一定要取别名,否则报错
     int selectDiscussPostRows(@Param("userId") int userId);
@@ -27,4 +27,6 @@ public interface DiscussPostMapper {
     int updateType(int id, int type);
 
     int updateStatus(int id, int status);
+
+    int updateScore(int id, double score);
 }

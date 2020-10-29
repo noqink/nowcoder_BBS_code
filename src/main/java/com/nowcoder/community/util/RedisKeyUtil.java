@@ -19,6 +19,8 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_DAU = "dau";
 
+    private static final String PREFIX_POST = "post";
+
     // 关注
     private static final String PREFIX_FOLLOWEE = "followee";
     private static final String PREFIX_FOLLOWER = "follower";
@@ -77,5 +79,10 @@ public class RedisKeyUtil {
 
     public static String getDAUkey(String startDate, String endDate){
         return PREFIX_DAU + SPILIT + startDate + SPILIT + endDate;
+    }
+
+    //帖子分数(点赞加精等操作 存入postId)
+    public static String getPostScoreKey(){
+        return PREFIX_POST + SPILIT + "score";
     }
 }
