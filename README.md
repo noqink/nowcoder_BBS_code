@@ -2,7 +2,8 @@
 #### redis实现用户统计
       UV: ip排重统计(每次访问都统计) Hyperloglog
       DAU: userId排重统计(访问一次统计) Bitmap
-
+#### quartz实现热帖
+#### 修改了头像上传功能 文件转存qiniu
 
 #### 10.26.2020
 #### ES搜索 高亮显示 (jquery版本更换 差点以为消息队列阻塞)
