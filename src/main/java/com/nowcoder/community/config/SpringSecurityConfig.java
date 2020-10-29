@@ -44,6 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implement
                         AUTHORITY_MODERATOR
                 )
                 .antMatchers(
+                        "/data/**",
                         "/discuss/delete"
                 )
                 .hasAnyAuthority(

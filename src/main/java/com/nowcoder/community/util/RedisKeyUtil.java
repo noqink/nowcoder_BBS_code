@@ -15,6 +15,10 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_USER = "user";
 
+    private static final String PREFIX_UV = "uv";
+
+    private static final String PREFIX_DAU = "dau";
+
     // 关注
     private static final String PREFIX_FOLLOWEE = "followee";
     private static final String PREFIX_FOLLOWER = "follower";
@@ -59,4 +63,19 @@ public class RedisKeyUtil {
         return PREFIX_USER + SPILIT + userId;
     }
 
+    public static String getUVkey(String date){
+        return PREFIX_UV + SPILIT + date;
+    }
+
+    public static String getUVkey(String startDate, String endDate){
+        return PREFIX_UV + SPILIT + startDate + SPILIT + endDate;
+    }
+
+    public static String getDAUkey(String date){
+        return PREFIX_DAU + SPILIT + date;
+    }
+
+    public static String getDAUkey(String startDate, String endDate){
+        return PREFIX_DAU + SPILIT + startDate + SPILIT + endDate;
+    }
 }
