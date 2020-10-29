@@ -1,4 +1,9 @@
-#### 10.22.2020
+#### 10.29.2020
+#### UV: ip排重统计(每次访问都统计) Hyperloglog
+#### DAU: userId排重统计(访问一次统计) Bitmap
+#### redis实现用户统计
+
+#### 10.26.2020
 #### ES搜索 高亮显示 (jquery版本更换 差点以为消息队列阻塞)
 #### 删除LoginTicketRequired注解 加入Spring security进行权限管理
 
