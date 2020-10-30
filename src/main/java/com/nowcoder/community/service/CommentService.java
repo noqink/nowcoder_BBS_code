@@ -29,12 +29,20 @@ public class CommentService implements CommunityConstant {
         return commentMapper.selectCommentsByEntity(entityType, entityId, offset, limit);
     }
 
+    public List<Comment> findCommentsByUserId(int entityType, int UserId, int offset, int limit){
+        return commentMapper.selectCommentsByUserId(entityType, UserId, offset, limit);
+    }
+
     public Comment findCommentById(int id){
         return commentMapper.selectCommentById(id);
     }
 
     public int findCommentCount(int entityType, int entityId){
         return commentMapper.selectCountByEntity(entityType, entityId);
+    }
+
+    public int findCommentCountByUserId(int entityType, int userId){
+        return commentMapper.selectCountByUserId(entityType, userId);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)

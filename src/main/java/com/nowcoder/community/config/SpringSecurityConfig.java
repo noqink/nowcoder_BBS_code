@@ -29,7 +29,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implement
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(
-                      "/user/setting","/user/upload","/user/updatePassword",
+                      "/user/setting","/user/upload","/user/updatePassword","/user/mypost","/user/myreply",
                         "/discuss/add", "/comment/add/**", "/message/**",
                         "/like", "/follow", "/unfollow"
                 )
@@ -45,7 +45,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implement
                 )
                 .antMatchers(
                         "/data/**",
-                        "/discuss/delete"
+                        "/discuss/delete",
+                        "/actuator/**"
                 )
                 .hasAnyAuthority(
                         AUTHORITY_ADMIN

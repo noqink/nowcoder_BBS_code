@@ -1,10 +1,11 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Comment;
+import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.FollowService;
-import com.nowcoder.community.service.LikeService;
-import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -58,6 +59,12 @@ public class UserController implements CommunityConstant {
     private UserService userService;
 
     @Autowired
+    private DiscussPostService discussPostService;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
     private LikeService likeService;
 
     @Autowired
@@ -68,7 +75,7 @@ public class UserController implements CommunityConstant {
 
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
-    public String getSettingPage(Model model){
+    public String getSettingPage(Model model) {
         // 生成上传文件名称
         String fileName = CommunityUtil.generateUUID();
         // 设置响应信息
@@ -87,8 +94,8 @@ public class UserController implements CommunityConstant {
     // 更新头像路径 异步
     @RequestMapping(path = "/header/url", method = RequestMethod.POST)
     @ResponseBody
-    public String updateHeader(String fileName){
-        if (StringUtils.isBlank(fileName)){
+    public String updateHeader(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
             return CommunityUtil.getJSONString(1, "文件名不能为空");
         }
 
@@ -101,8 +108,8 @@ public class UserController implements CommunityConstant {
     // 废弃
     @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
-    public String uploadHeader(MultipartFile headerImage, Model model){
-        if (headerImage == null){
+    public String uploadHeader(MultipartFile headerImage, Model model) {
+        if (headerImage == null) {
             model.addAttribute("error", "文件还未上传！");
             return "site/setting";
         }
@@ -110,7 +117,7 @@ public class UserController implements CommunityConstant {
         // 获取后缀
         String fileName = headerImage.getOriginalFilename();
         String suffix = fileName.substring(fileName.lastIndexOf("."));
-        if (StringUtils.isBlank(suffix)){
+        if (StringUtils.isBlank(suffix)) {
             model.addAttribute("error", "文件格式不正确！");
             return "site/setting";
         }
@@ -139,7 +146,7 @@ public class UserController implements CommunityConstant {
 
     // 废弃
     @RequestMapping(path = "/header/{fileName}", method = RequestMethod.GET)
-    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response){
+    public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
 
         // 获取服务器存放路径
         String filePath = uploadPath + "/" + fileName;
@@ -151,10 +158,10 @@ public class UserController implements CommunityConstant {
         try (
                 FileInputStream fis = new FileInputStream(filePath);
                 ServletOutputStream os = response.getOutputStream()
-        ){
+        ) {
             byte[] buffer = new byte[1024];
             int length = 0;
-            while ((length = fis.read(buffer)) != -1){
+            while ((length = fis.read(buffer)) != -1) {
                 os.write(buffer, 0, length);
             }
         } catch (IOException e) {
@@ -166,16 +173,16 @@ public class UserController implements CommunityConstant {
     @LoginRequired
     @RequestMapping(path = "/updatePassword", method = RequestMethod.POST)
     public String updatePasswordByOld(String oldPassword, String newPassword, String newPasswordConfim,
-                                      Model model, @CookieValue("ticket") String ticket){
+                                      Model model, @CookieValue("ticket") String ticket) {
 
-        Map<String,Object> map=userService.updatePassword(oldPassword, newPassword, newPasswordConfim);
-        if(map==null||map.isEmpty()){
+        Map<String, Object> map = userService.updatePassword(oldPassword, newPassword, newPasswordConfim);
+        if (map == null || map.isEmpty()) {
             userService.logout(ticket);
             return "redirect:/login";
         }
-        model.addAttribute("oldPasswordMsg",map.get("oldPasswordMsg"));
-        model.addAttribute("newPasswordMsg",map.get("newPasswordMsg"));
-        model.addAttribute("newPasswordConfimMsg",map.get("newPasswordConfimMsg"));
+        model.addAttribute("oldPasswordMsg", map.get("oldPasswordMsg"));
+        model.addAttribute("newPasswordMsg", map.get("newPasswordMsg"));
+        model.addAttribute("newPasswordConfimMsg", map.get("newPasswordConfimMsg"));
 
         return "site/setting";
 
@@ -183,10 +190,10 @@ public class UserController implements CommunityConstant {
 
     // 个人主页
     @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
-    public String getProfilePage(@PathVariable("userId") int userId, Model model){
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
 
         User user = userService.findUserById(userId);
-        if (user == null){
+        if (user == null) {
             throw new RuntimeException("该用户不存在");
         }
 
@@ -201,11 +208,82 @@ public class UserController implements CommunityConstant {
 
         boolean hasFollow = false;
         // 判断登陆情况
-        if (hostHolder.getUsers() != null){
-            hasFollow = followService.hasFollow(hostHolder.getUsers().getId(), ENTITY_TYPE_USER,userId);
+        if (hostHolder.getUsers() != null) {
+            hasFollow = followService.hasFollow(hostHolder.getUsers().getId(), ENTITY_TYPE_USER, userId);
         }
         model.addAttribute("userFollowerStatus", hasFollow);
 
         return "site/profile";
+    }
+
+    // 我的帖子页面
+    @RequestMapping(path = "/mypost", method = RequestMethod.GET)
+    public String getMypostPage(Page page, Model model) {
+        User user = hostHolder.getUsers();
+        if (user == null) {
+            throw new RuntimeException("用户未登陆！");
+        }
+        int postCount = discussPostService.selectDiscussPostRows(user.getId());
+        page.setPath("/user/mypost");
+        page.setRows(postCount);
+
+        List<DiscussPost> posts = discussPostService.findDiscussPosts(user.getId(), page.getOffset(), page.getLimit(), 0);
+        List<Map<String, Object>> show_myposts = new ArrayList<>();
+        if (posts != null) {
+            // 利用posts中的user_id获取实际的user,方便提取例如username的数据
+            for (DiscussPost post : posts
+            ) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("post", post);
+                // 查询赞
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount", likeCount);
+                show_myposts.add(map);
+            }
+        }
+        model.addAttribute("posts", show_myposts);
+        model.addAttribute("count", postCount);
+
+        return "site/my-post";
+    }
+
+    // 我的回复页面(目前只针对对帖子的回复)
+    @RequestMapping(path = "/myreply", method = RequestMethod.GET)
+    public String getMyreplyPage(Page page, Model model) {
+        User user = hostHolder.getUsers();
+        if (user == null) {
+            throw new RuntimeException("用户未登陆！");
+        }
+        int count = commentService.findCommentCountByUserId(ENTITY_TYPE_POST, user.getId());
+        page.setPath("/user/myreply");
+        page.setRows(count);
+        // 对帖子的回复
+        List<Comment> comments = commentService.findCommentsByUserId(ENTITY_TYPE_POST, user.getId(), page.getOffset(), page.getLimit());
+        List<Map<String, Object>> show_myposts = new ArrayList<>();
+        if (comments != null) {
+            // 利用posts中的user_id获取实际的user,方便提取例如username的数据
+            for (Comment c : comments
+            ) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("comment", c);
+                map.put("post", discussPostService.findDiscussPostById(c.getEntityId()));
+                show_myposts.add(map);
+            }
+        }
+        model.addAttribute("posts", show_myposts);
+        model.addAttribute("count", count);
+        return "site/my-reply";
+    }
+
+    private static ArrayList getSingle(ArrayList list) {
+        ArrayList newList = new ArrayList();     //创建新集合
+        Iterator it = list.iterator();        //根据传入的集合(旧集合)获取迭代器
+        while (it.hasNext()) {          //遍历老集合
+            Object obj = it.next();       //记录每一个元素
+            if (!newList.contains(obj)) {      //如果新集合中不包含旧集合中的元素
+                newList.add(obj);       //将元素添加
+            }
+        }
+        return newList;
     }
 }
