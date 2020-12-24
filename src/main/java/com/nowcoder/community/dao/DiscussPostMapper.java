@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Mapper
-@Repository
+//@Repository
 public interface DiscussPostMapper {
 
     // userId为"我发布的帖子"功能调用

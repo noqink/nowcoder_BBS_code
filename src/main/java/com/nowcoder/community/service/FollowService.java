@@ -63,7 +63,8 @@ public class FollowService implements CommunityConstant {
 
     // 粉丝列表数量
     public long findFollowerCount(int entityType, int entityId){
-        String followerKey = RedisKeyUtil.getFolloweeKey(entityType, entityId);
+        String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
+        System.out.println(followerKey);
         return redisTemplate.opsForZSet().zCard(followerKey);
     }
 
@@ -101,6 +102,7 @@ public class FollowService implements CommunityConstant {
     public List<Map<String, Object>> findFollowers(int userId, int offset, int limit){
         String followerKey = RedisKeyUtil.getFollowerKey(ENTITY_TYPE_USER, userId);
         Set<Integer> targetIds = redisTemplate.opsForZSet().reverseRange(followerKey, offset, offset + limit - 1);
+        System.out.println(targetIds);
         List<Map<String, Object>> list = new ArrayList<>();
 
         if (targetIds == null){
@@ -109,7 +111,7 @@ public class FollowService implements CommunityConstant {
 
         for (Integer targetId :targetIds
         ) {
-            User user = userService.findUserById(targetId);
+            User user = userService.findUserById(targetId);;
             Map<String, Object> map = new HashMap<>();
             map.put("user", user);
 

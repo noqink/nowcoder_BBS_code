@@ -80,7 +80,7 @@ public class CommentController implements CommunityConstant {
             // 要去重 A B A C D A
             redisTemplate.opsForSet().add(redisKey, discussPostId);
         }
-
+        System.out.println(discussPostId);
         return "redirect:/discuss/detail/" + discussPostId;
     }
 

@@ -77,7 +77,7 @@
 				<!-- 作者 -->
 				<div class="media pb-3 border-bottom">
 					<a th:href="@{|/user/profile/${user.id}|}">
-						<img th:src="${user.headerUrl}" class="align-self-start mr-4 rounded-circle user-header" alt="用户头像" >
+					<img th:src="${user.headerUrl}" class="align-self-start mr-4 rounded-circle user-header" alt="用户头像" >
 					</a>
 					<div class="media-body">
 						<div class="mt-0 text-warning" th:utext="${user.username}">寒江雪</div>
@@ -296,7 +296,7 @@
 		</footer>
 	</div>
 	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-	<!--	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>-->
+<!--		<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>

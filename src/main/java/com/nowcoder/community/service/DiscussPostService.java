@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +25,7 @@ public class DiscussPostService {
 
     private static final Logger logger = LoggerFactory.getLogger(DiscussPostService.class);
 
-    @Autowired
+    @Resource
     private DiscussPostMapper discussPostMapper;
 
     @Autowired
@@ -85,7 +86,7 @@ public class DiscussPostService {
     }
 
     public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit, int orderMode){
-        // 缓存热门帖子(首页)
+         // 缓存热门帖子(首页)
         if (userId == 0 && orderMode == 1){
             return postListCache.get(offset + ":" + limit);
         }

@@ -90,20 +90,20 @@ public class UserController implements CommunityConstant {
 
         return "site/setting";
     }
-
-    // 更新头像路径 异步
-    @RequestMapping(path = "/header/url", method = RequestMethod.POST)
-    @ResponseBody
-    public String updateHeader(String fileName) {
-        if (StringUtils.isBlank(fileName)) {
-            return CommunityUtil.getJSONString(1, "文件名不能为空");
-        }
-
-        String url = headerBucketUrl + "/" + fileName;
-        userService.updateHeadUrl(hostHolder.getUsers().getId(), url);
-
-        return CommunityUtil.getJSONString(0);
-    }
+//
+//    // 更新头像路径 异步
+//    @RequestMapping(path = "/header/url", method = RequestMethod.POST)
+//    @ResponseBody
+//    public String updateHeader(String fileName) {
+//        if (StringUtils.isBlank(fileName)) {
+//            return CommunityUtil.getJSONString(1, "文件名不能为空");
+//        }
+//
+//        String url = headerBucketUrl + "/" + fileName;
+//        userService.updateHeadUrl(hostHolder.getUsers().getId(), url);
+//
+//        return CommunityUtil.getJSONString(0);
+//    }
 
     // 废弃
     @LoginRequired
@@ -139,9 +139,12 @@ public class UserController implements CommunityConstant {
         // http:localhost:8080/community/user/header/xxx.png
         User user = hostHolder.getUsers();
         String headerUrl = domain + contextPath + "/user" + "/header/" + fileName;
-        userService.updateHeadUrl(user.getId(), headerUrl);
-
-        return "redirect:/index";
+        int rows = userService.updateHeadUrl(user.getId(), headerUrl);
+        if (rows>0){
+            model.addAttribute("success","成功");
+        }
+        return "site/setting";
+//        return "redirect:/index";
     }
 
     // 废弃
@@ -203,7 +206,9 @@ public class UserController implements CommunityConstant {
         model.addAttribute("userLikeCount", userLikeCount);
 
         // 关注
+        System.out.println(followService.findFolloweeCount(userId, ENTITY_TYPE_USER));
         model.addAttribute("userFolloweeCount", followService.findFolloweeCount(userId, ENTITY_TYPE_USER));
+        System.out.println(followService.findFollowerCount(ENTITY_TYPE_USER, userId));
         model.addAttribute("userFollowerCount", followService.findFollowerCount(ENTITY_TYPE_USER, userId));
 
         boolean hasFollow = false;

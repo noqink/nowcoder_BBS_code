@@ -60,7 +60,6 @@ public class RedisKeyUtil {
     }
 
     // 用户
-    // 登录凭证
     public static String getUserKey(int userId){
         return PREFIX_USER + SPILIT + userId;
     }

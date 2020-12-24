@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Mapper
-@Repository
+//@Repository
 public interface MessageMapper {
 
     // 查询当前用户会话列表,针对每个会话只返回一条最新私信

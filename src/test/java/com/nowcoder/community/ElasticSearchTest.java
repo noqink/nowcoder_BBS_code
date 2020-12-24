@@ -172,6 +172,7 @@ public class ElasticSearchTest {
             public <T> T mapSearchHit(SearchHit searchHit, Class<T> aClass) {
                 return null;
             }
+
         });
 
         System.out.println(page.getTotalElements());

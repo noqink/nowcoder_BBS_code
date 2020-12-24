@@ -18,7 +18,7 @@ public class FilterTests {
 
     @Test
     public void testSensitiveFilter(){
-        String s = sensitiveFilter.Filter("邱实大傻逼 喜欢☆嫖☆娼☆");
+        String s = sensitiveFilter.Filter("PHP");
         System.out.println(s);
     }
 

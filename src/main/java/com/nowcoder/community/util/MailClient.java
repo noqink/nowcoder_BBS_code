@@ -37,9 +37,5 @@ public class MailClient {
         } catch (MessagingException e) {
             logger.error("邮件发送失败："+e.getMessage());
         }
-
-
     }
-
-
 }

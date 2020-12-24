@@ -9,6 +9,8 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 @Controller
 public class FollowController implements CommunityConstant {
+    private static final Logger logger = LoggerFactory.getLogger(FollowController.class);
 
     @Autowired
     private HostHolder hostHolder;
@@ -85,7 +88,7 @@ public class FollowController implements CommunityConstant {
                     ) {
                 // 加入当前登陆用户对每个关注列表用户的关注状态
                 User followeeUser = (User) followeeMap.get("user");
-                followeeMap.put("followStatus", hasFollow(followeeUser.getId()));
+                followeeMap.put("followeeStatus", hasFollow(followeeUser.getId()));
             }
         }
 
@@ -113,10 +116,12 @@ public class FollowController implements CommunityConstant {
             ) {
                 // 加入当前登陆用户对每个关注列表用户的关注状态
                 User followerUser = (User) followerMap.get("user");
-                followerMap.put("followStatus", hasFollow(followerUser.getId()));
+                System.out.println(followerUser);
+                followerMap.put("followerStatus", hasFollow(followerUser.getId()));
             }
         }
-
+        logger.warn(followersList.toString());
+        System.out.println(followersList.toString());
         model.addAttribute("followers", followersList);
 
         return "/site/follower";

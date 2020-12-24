@@ -82,9 +82,11 @@ public class LoginController implements CommunityConstant {
         if (StringUtils.isNotBlank(kaptchaOwner)){
             // 判断cookie未失效
             String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
-            kaptcha =(String) redisTemplate.opsForValue().get(redisKey);
+            kaptcha = (String) redisTemplate.opsForValue().get(redisKey);
         }
-        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)){
+        if (StringUtils.isBlank(kaptcha)
+                || StringUtils.isBlank(code)
+                || !kaptcha.equalsIgnoreCase(code)){
             model.addAttribute("codeMsg", "验证码不正确");
             return "site/login";
         }

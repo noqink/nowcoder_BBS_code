@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Mapper
-@Repository
+//@Repository
 public interface CommentMapper {
 
         List<Comment> selectCommentsByEntity(int entityType, int entityId, int offset, int limit);
